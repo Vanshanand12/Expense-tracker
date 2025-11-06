@@ -131,32 +131,121 @@
     </div>
   </section>
 
+   <!-- Interactive Expense Tracker Logic -->
   <script>
-    // Pie Chart
-    new Chart(document.getElementById('pieChart'), {
+    // --- Pie Chart ---
+    const pieChart = new Chart(document.getElementById('pieChart'), {
       type: 'pie',
       data: {
         labels: ['Food', 'Travel', 'Shopping', 'Others'],
         datasets: [{
-          data: [5000, 3000, 2500, 1950],
+          data: [0, 0, 0, 0],
           backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545']
         }]
       }
     });
 
-    // Bar Chart
-    new Chart(document.getElementById('barChart'), {
+    // --- Bar Chart ---
+    const barChart = new Chart(document.getElementById('barChart'), {
       type: 'bar',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        labels: [],
         datasets: [{
           label: 'Expenses (₹)',
-          data: [3000, 2500, 4200, 3100, 4900],
+          data: [],
           backgroundColor: '#007bff'
         }]
       }
     });
+
+    // --- Get Elements ---
+    const form = document.querySelector('form');
+    const tableBody = document.querySelector('tbody');
+    const totalExpenseElement = document.querySelectorAll('.display-6')[0]; // total
+    const monthExpenseElement = document.querySelectorAll('.display-6')[1]; // this month
+    const budgetLeftElement = document.querySelectorAll('.display-6')[2]; // budget left
+
+    // --- Load Existing Expenses from Local Storage ---
+    let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+    // --- Function to Render Table ---
+    function renderTable() {
+      tableBody.innerHTML = '';
+      expenses.forEach((exp) => {
+        const row = `<tr>
+          <td>${exp.date}</td>
+          <td>${exp.category}</td>
+          <td>${exp.description}</td>
+          <td>₹ ${exp.amount}</td>
+        </tr>`;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    // --- Function to Add Expense ---
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const category = form.querySelector('select').value;
+      const amount = parseFloat(form.querySelector('input[type="number"]').value);
+      const date = form.querySelector('input[type="date"]').value;
+      const description = form.querySelector('textarea').value;
+
+      if (!amount || !date) {
+        alert('Please fill all required fields!');
+        return;
+      }
+
+      const expense = { category, amount, date, description };
+      expenses.push(expense);
+
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+      renderTable();
+      updateDashboard();
+      updateCharts();
+      form.reset();
+    });
+
+    // --- Dashboard Update Function ---
+    function updateDashboard() {
+      const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+      totalExpenseElement.textContent = `₹ ${total}`;
+
+      const thisMonth = expenses.filter(e => {
+        const month = new Date(e.date).getMonth();
+        return month === new Date().getMonth();
+      }).reduce((sum, e) => sum + e.amount, 0);
+      monthExpenseElement.textContent = `₹ ${thisMonth}`;
+
+      const budget = 15000; // example budget
+      budgetLeftElement.textContent = `₹ ${budget - total}`;
+    }
+
+    // --- Chart Update Functions ---
+    function updateCharts() {
+      const categories = ['Food', 'Travel', 'Shopping', 'Others'];
+      const categorySums = categories.map(cat => {
+        return expenses
+          .filter(e => e.category === cat)
+          .reduce((sum, e) => sum + e.amount, 0);
+      });
+
+      pieChart.data.datasets[0].data = categorySums;
+      pieChart.update();
+
+      const lastFive = expenses.slice(-5);
+      barChart.data.labels = lastFive.map(e => e.date);
+      barChart.data.datasets[0].data = lastFive.map(e => e.amount);
+      barChart.update();
+    }
+
+    // --- Initial Render ---
+    renderTable();
+    updateDashboard();
+    updateCharts();
   </script>
+
+ 
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
