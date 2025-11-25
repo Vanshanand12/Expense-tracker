@@ -39,29 +39,37 @@
   </nav>
 
   <!-- Dashboard Section -->
-  <section id="dashboard" class="container my-5">
-    <h2 class="mb-4">Dashboard</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card shadow-sm p-3 text-center">
-          <h5>Total Expenses</h5>
-          <p id="totalExpenses" class="display-6 editable">12450</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm p-3 text-center">
-          <h5>This Month</h5>
-          <p id="thisMonth" class="display-6 editable">4300</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm p-3 text-center">
-          <h5>Budget Left</h5>
-          <p id="budgetLeft" class="display-6 text-success">1700</p>
-        </div>
+<section id="dashboard" class="container my-5">
+  <h2 class="mb-4">Dashboard</h2>
+  <div class="row g-4">
+    
+    <!-- Total Budget -->
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3 text-center">
+        <h5>Total Budget</h5>
+        <p id="totalBudget" class="display-6 editable">20000</p>
       </div>
     </div>
-  </section>
+
+    <!-- Total Expenses -->
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3 text-center">
+        <h5>Total Expenses</h5>
+        <p id="totalExpenses" class="display-6">0</p>
+      </div>
+    </div>
+
+    <!-- Budget Left -->
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3 text-center">
+        <h5>Budget Left</h5>
+        <p id="budgetLeft" class="display-6 text-success">0</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 
   <!-- Add Expense Section -->
   <section id="add" class="container my-5">
