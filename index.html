@@ -330,59 +330,51 @@
     <h2 class="mb-4">Dashboard</h2>
     <div class="row g-4">
       <div class="row mt-5">
-  <div class="col-md-6">
-    <div class="card p-3 shadow-sm">
-      <h5 class="text-center mb-3">Expenses Distribution (Pie Chart)</h5>
-      <canvas id="pieChart"></canvas>
-    </div>
-  </div>
-  <div class="col-md-6">
-    <div class="card p-3 shadow-sm">
-      <h5 class="text-center mb-3">Monthly Spending (Bar Chart)</h5>
-      <canvas id="barChart"></canvas>
-    </div>
+
+<!-- Dashboard Cards -->
+<div class="col-md-4">
+  <div class="card shadow-sm p-3 text-center">
+    <h5>Total Budget</h5>
+    <p id="totalBudget" class="display-6 money editable">20000</p>
   </div>
 </div>
-      <section id="reports" class="container my-5">
+
+<div class="col-md-4">
+  <div class="card shadow-sm p-3 text-center">
+    <h5>Total Expenses</h5>
+    <p id="totalExpenses" class="display-6 money">0</p>
+  </div>
+</div>
+
+<div class="col-md-4">
+  <div class="card shadow-sm p-3 text-center">
+    <h5>Budget Left</h5>
+    <p id="budgetLeft" class="display-6 money text-success">0</p>
+  </div>
+</div>
+      </div>
+      </section>
+
+  
+<!--Reports-->
+        <section id="report" class="container my-5">
   <h2 class="mb-4">Reports</h2>
   <div class="row">
     <div class="col-md-6">
-      <canvas id="pieChart"></canvas>
+      <div class="card p-3 shadow-sm">
+        <h5 class="text-center mb-3">Expenses Distribution (Pie Chart)</h5>
+        <canvas id="pieChart"></canvas>
+      </div>
     </div>
     <div class="col-md-6">
-      <canvas id="barChart"></canvas>
+      <div class="card p-3 shadow-sm">
+        <h5 class="text-center mb-3">Monthly Spending (Bar Chart)</h5>
+        <canvas id="barChart"></canvas>
+      </div>
     </div>
   </div>
+</section>
 
-
-
-
-      <!-- Total Budget (click to edit) -->
-      <div class="col-md-4">
-        <div class="card shadow-sm p-3 text-center">
-          <h5>Total Budget</h5>
-          <p id="totalBudget" class="display-6 money editable">20000</p>
-        </div>
-      </div>
-
-      <!-- Total Expenses (computed) -->
-      <div class="col-md-4">
-        <div class="card shadow-sm p-3 text-center">
-          <h5>Total Expenses</h5>
-          <p id="totalExpenses" class="display-6 money">0</p>
-        </div>
-      </div>
-
-      <!-- Budget Left (computed) -->
-      <div class="col-md-4">
-        <div class="card shadow-sm p-3 text-center">
-          <h5>Budget Left</h5>
-          <p id="budgetLeft" class="display-6 money text-success">0</p>
-        </div>
-      </div>
-
-    </div>
-  </section>
 
   <!-- Add Expense Section -->
   <section id="add" class="container my-5">
