@@ -284,3 +284,56 @@ function updateCharts() {
   enableBudgetInlineEdit();
   updateCharts();
 })();
+
+// --- CHARTS ---
+let pieChart = new Chart(document.getElementById('pieChart'), {
+  type: 'pie',
+  data: {
+    labels: ['Food', 'Travel', 'Shopping', 'Others'],
+    datasets: [{
+      data: [0, 0, 0, 0]
+    }]
+  }
+});
+
+let barChart = new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels: [],
+    datasets: [{
+      label: 'Expenses',
+      data: []
+    }]
+  }
+});
+
+// UPDATE CHARTS WHENEVER DATA CHANGES
+function updateCharts() {
+  const categories = ['Food', 'Travel', 'Shopping', 'Others'];
+  const sums = categories.map(cat =>
+    state.expenses.filter(e => e.category === cat)
+                  .reduce((a, b) => a + Number(b.amount), 0)
+  );
+
+  pieChart.data.datasets[0].data = sums;
+  pieChart.update();
+
+  const last = state.expenses.slice(-5);
+  barChart.data.labels = last.map(e => e.date);
+  barChart.data.datasets[0].data = last.map(e => Number(e.amount));
+  barChart.update();
+}
+
+// hook in add/remove
+const originalAdd = addExpense;
+addExpense = function(p) {
+  originalAdd(p);
+  updateCharts();
+};
+
+const originalRemove = removeExpense;
+removeExpense = function(id) {
+  originalRemove(id);
+  updateCharts();
+};
+
