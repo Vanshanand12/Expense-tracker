@@ -2,7 +2,6 @@
 // ----------------------------
 // --- STATE & SELECTORS ---
 // ----------------------------
-
 const totalBudgetEl = document.getElementById('totalBudget');
 const totalExpensesEl = document.getElementById('totalExpenses');
 const budgetLeftEl = document.getElementById('budgetLeft');
@@ -41,17 +40,13 @@ function loadState() {
 // ----------------------------
 // --- CHARTS VARIABLES ---
 // ----------------------------
-let pieChart = null;
-let barChart = null;
+let pieChart, barChart;
 
 // ----------------------------
 // --- RENDER CHARTS ---
 // ----------------------------
-function renderCharts() {
-  const ctxPie = document.getElementById("pieChart").getContext("2d");
-  const ctxBar = document.getElementById("barChart").getContext("2d");
-
-  // Category totals
+function updateCharts() {
+  // Category totals (Pie Chart)
   const categoryTotals = {};
   state.expenses.forEach(exp => {
     categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + Number(exp.amount);
@@ -60,22 +55,7 @@ function renderCharts() {
   const pieLabels = Object.keys(categoryTotals);
   const pieData = Object.values(categoryTotals);
 
-  // Destroy old chart before rebuild
-  if (pieChart) pieChart.destroy();
-  pieChart = new Chart(ctxPie, {
-    type: "pie",
-    data: {
-      labels: pieLabels,
-      datasets: [{
-        data: pieData
-      }]
-    },
-    options: {
-      responsive: true
-    }
-  });
-
-  // Monthly totals
+  // Monthly totals (Bar Chart)
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const monthlyTotals = new Array(12).fill(0);
 
@@ -84,19 +64,37 @@ function renderCharts() {
     monthlyTotals[m] += Number(exp.amount);
   });
 
+  // Destroy old charts if they exist
+  if (pieChart) pieChart.destroy();
   if (barChart) barChart.destroy();
-  barChart = new Chart(ctxBar, {
+
+  // Create Pie Chart
+  const pieCtx = document.getElementById("pieChart").getContext("2d");
+  pieChart = new Chart(pieCtx, {
+    type: "pie",
+    data: {
+      labels: pieLabels,
+      datasets: [{
+        data: pieData,
+        backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545']
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  // Create Bar Chart
+  const barCtx = document.getElementById("barChart").getContext("2d");
+  barChart = new Chart(barCtx, {
     type: "bar",
     data: {
       labels: months,
       datasets: [{
         label: "Monthly Expenses",
-        data: monthlyTotals
+        data: monthlyTotals,
+        backgroundColor: '#4674ff'
       }]
     },
-    options: {
-      responsive: true
-    }
+    options: { responsive: true }
   });
 }
 
@@ -110,7 +108,7 @@ function renderDashboard() {
   totalExpensesEl.innerText = formatMoney(totalExpenses);
   budgetLeftEl.innerText = formatMoney(state.budget - totalExpenses);
 
-  renderCharts(); // 🔥 chart update
+  updateCharts();
 }
 
 // ----------------------------
@@ -125,7 +123,7 @@ function renderHistory() {
 
     li.innerHTML = `
       <span>${item.category} • ${item.date} 
-        <small class="text-muted"> - ${item.desc}</small>
+        <small class="text-muted"> - ${item.desc || ''}</small>
       </span>
       <span>
         <strong>₹ ${formatMoney(item.amount)}</strong>
@@ -146,7 +144,6 @@ function addExpense(payload) {
   saveState();
   renderDashboard();
   renderHistory();
-  updateCharts();
 }
 
 function removeExpense(id) {
@@ -154,7 +151,6 @@ function removeExpense(id) {
   saveState();
   renderDashboard();
   renderHistory();
-  updateCharts();
 }
 
 // ----------------------------
@@ -212,67 +208,13 @@ expenseForm.addEventListener("submit", e => {
   expenseForm.reset();
 });
 
-// delete expense
+// Delete expense from history
 historyList.addEventListener("click", e => {
   if (e.target.classList.contains("remove-btn")) {
     const id = e.target.closest("li").dataset.id;
     if (confirm("Delete this expense?")) removeExpense(id);
   }
 });
-
-// ------- CHART SETUP -------
-let pieChart, barChart;
-
-function updateCharts() {
-  const categoryTotals = {};
-  const monthTotals = {};
-
-  state.expenses.forEach(exp => {
-    // Pie chart (by category)
-    if (!categoryTotals[exp.category]) categoryTotals[exp.category] = 0;
-    categoryTotals[exp.category] += Number(exp.amount);
-
-    // Bar chart (by month)
-    const month = exp.date.slice(0, 7); // YYYY-MM
-    if (!monthTotals[month]) monthTotals[month] = 0;
-    monthTotals[month] += Number(exp.amount);
-  });
-
-  const pieLabels = Object.keys(categoryTotals);
-  const pieData = Object.values(categoryTotals);
-
-  const barLabels = Object.keys(monthTotals);
-  const barData = Object.values(monthTotals);
-
-  // Destroy old charts before creating new ones
-  if (pieChart) pieChart.destroy();
-  if (barChart) barChart.destroy();
-
-  // ----- PIE CHART -----
-  const pieCtx = document.getElementById('pieChart').getContext('2d');
-  pieChart = new Chart(pieCtx, {
-    type: 'pie',
-    data: {
-      labels: pieLabels,
-      datasets: [{
-        data: pieData,
-      }]
-    }
-  });
-
-  // ----- BAR CHART -----
-  const barCtx = document.getElementById('barChart').getContext('2d');
-  barChart = new Chart(barCtx, {
-    type: 'bar',
-    data: {
-      labels: barLabels,
-      datasets: [{
-        data: barData,
-      }]
-    }
-  });
-}
-
 
 // ----------------------------
 // --- INITIALIZE ---
@@ -282,58 +224,4 @@ function updateCharts() {
   renderDashboard();
   renderHistory();
   enableBudgetInlineEdit();
-  updateCharts();
 })();
-
-// --- CHARTS ---
-let pieChart = new Chart(document.getElementById('pieChart'), {
-  type: 'pie',
-  data: {
-    labels: ['Food', 'Travel', 'Shopping', 'Others'],
-    datasets: [{
-      data: [0, 0, 0, 0]
-    }]
-  }
-});
-
-let barChart = new Chart(document.getElementById('barChart'), {
-  type: 'bar',
-  data: {
-    labels: [],
-    datasets: [{
-      label: 'Expenses',
-      data: []
-    }]
-  }
-});
-
-// UPDATE CHARTS WHENEVER DATA CHANGES
-function updateCharts() {
-  const categories = ['Food', 'Travel', 'Shopping', 'Others'];
-  const sums = categories.map(cat =>
-    state.expenses.filter(e => e.category === cat)
-                  .reduce((a, b) => a + Number(b.amount), 0)
-  );
-
-  pieChart.data.datasets[0].data = sums;
-  pieChart.update();
-
-  const last = state.expenses.slice(-5);
-  barChart.data.labels = last.map(e => e.date);
-  barChart.data.datasets[0].data = last.map(e => Number(e.amount));
-  barChart.update();
-}
-
-// hook in add/remove
-const originalAdd = addExpense;
-addExpense = function(p) {
-  originalAdd(p);
-  updateCharts();
-};
-
-const originalRemove = removeExpense;
-removeExpense = function(id) {
-  originalRemove(id);
-  updateCharts();
-};
-
