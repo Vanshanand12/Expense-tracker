@@ -305,7 +305,7 @@
    <img src="assets/logo.svg" class="logo" alt="logo">
    </header>
 
-  nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
       <img src="assets/logo.svg" class="logo" alt="logo"> 
       
@@ -329,6 +329,21 @@
   <section id="dashboard" class="container my-5">
     <h2 class="mb-4">Dashboard</h2>
     <div class="row g-4">
+      <div class="row mt-5">
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm">
+      <h5 class="text-center mb-3">Expenses Distribution (Pie Chart)</h5>
+      <canvas id="pieChart"></canvas>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm">
+      <h5 class="text-center mb-3">Monthly Spending (Bar Chart)</h5>
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+</div>
+
 
       <!-- Total Budget (click to edit) -->
       <div class="col-md-4">
@@ -404,6 +419,7 @@
   </section>
 
   <!-- include dashboard.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
 </html>
