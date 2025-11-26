@@ -146,6 +146,7 @@ function addExpense(payload) {
   saveState();
   renderDashboard();
   renderHistory();
+  updateCharts();
 }
 
 function removeExpense(id) {
@@ -153,6 +154,7 @@ function removeExpense(id) {
   saveState();
   renderDashboard();
   renderHistory();
+  updateCharts();
 }
 
 // ----------------------------
@@ -218,6 +220,60 @@ historyList.addEventListener("click", e => {
   }
 });
 
+// ------- CHART SETUP -------
+let pieChart, barChart;
+
+function updateCharts() {
+  const categoryTotals = {};
+  const monthTotals = {};
+
+  state.expenses.forEach(exp => {
+    // Pie chart (by category)
+    if (!categoryTotals[exp.category]) categoryTotals[exp.category] = 0;
+    categoryTotals[exp.category] += Number(exp.amount);
+
+    // Bar chart (by month)
+    const month = exp.date.slice(0, 7); // YYYY-MM
+    if (!monthTotals[month]) monthTotals[month] = 0;
+    monthTotals[month] += Number(exp.amount);
+  });
+
+  const pieLabels = Object.keys(categoryTotals);
+  const pieData = Object.values(categoryTotals);
+
+  const barLabels = Object.keys(monthTotals);
+  const barData = Object.values(monthTotals);
+
+  // Destroy old charts before creating new ones
+  if (pieChart) pieChart.destroy();
+  if (barChart) barChart.destroy();
+
+  // ----- PIE CHART -----
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  pieChart = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: pieLabels,
+      datasets: [{
+        data: pieData,
+      }]
+    }
+  });
+
+  // ----- BAR CHART -----
+  const barCtx = document.getElementById('barChart').getContext('2d');
+  barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: barLabels,
+      datasets: [{
+        data: barData,
+      }]
+    }
+  });
+}
+
+
 // ----------------------------
 // --- INITIALIZE ---
 // ----------------------------
@@ -226,4 +282,5 @@ historyList.addEventListener("click", e => {
   renderDashboard();
   renderHistory();
   enableBudgetInlineEdit();
+  updateCharts();
 })();
